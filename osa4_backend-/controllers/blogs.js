@@ -5,15 +5,14 @@ const User = require('../models/user')
 //moduuli sisältää kaikki blogeihin liittyvien reittien määrittelyt
 
 
-
-const getTokenFrom = (request) => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7)
-  }
-  return null
-}
-
+//siirretty middlewareen
+// const getTokenFrom = (request) => {
+//   const authorization = request.get('authorization')
+//   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+//     return authorization.substring(7)
+//   }
+//   return null
+// }
 
 notesRouter.get('/', async (request, response) => {
   const blogs =await Blog
@@ -31,10 +30,10 @@ notesRouter.post('/', async (request, response) => {
 
   try {
     //Apufunktio getTokenFrom eristää tokenin headerista authorization.
-    const token = getTokenFrom(request)
-    const decodedToken = jwt.verify(token, process.env.SECRET) //Tokenin oikeellisuus varmistetaan
+    //const token = getTokenFrom(request)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET) //Tokenin oikeellisuus varmistetaan
     //Metodi myös dekoodaa tokenin, eli palauttaa olion, jonka perusteella token on laaditt
-    if (!token || !decodedToken.id) {
+    if (!request.token || !decodedToken.id) {
       return response.status(401).json({ error: 'token missing or invalid' })
     }
 
@@ -71,17 +70,14 @@ notesRouter.post('/', async (request, response) => {
 })
 
 
-
 // notesRouter.post('/', (request, response) => {
 //   const blog = new Blog(request.body)
-
 //   if (blog.likes === undefined) {
 //     console.log('eimääritelty')
 //     blog.likes === 0
 //     console.log(blog.likes)
 //     return response.status(400).json({ error: 'like content missing' })
 //   }
-
 //   blog
 //     .save()
 //     .then(result => {
@@ -92,7 +88,6 @@ notesRouter.post('/', async (request, response) => {
 //       response.status(500).json({ error: 'something went wrong...' })
 //     })
 
-
 notesRouter.delete('/:id', async (request, response) => {
   try {
     await Blog.findByIdAndRemove(request.params.id)
@@ -102,19 +97,22 @@ notesRouter.delete('/:id', async (request, response) => {
     response.status(400).send({ error: 'malformatted id' })
   }
 })
-// const blog = await Blog
-// .findById(request.params.id)
 
-// if ( blog.user.toString() === userid.toString() ){}
- 
-//////  Blog
-//     .findByIdAndRemove(request.params.id)
-//     .then(result => {  response.status(204).end()
-//     })
-// .catch(error => {
-//   response.status(400).send( { error:'malformatted id' } )
-//   {
-// })
+// notesRouter.delete('/:id', async (request, response) => {
+//   try {
+
+//     const userid =  await User.findById(request.token._id)
+//     console.log(userid)
+//     const blogDelete = await Blog.findById(request.paramas.id)
+//     // Kannasta haettu id tulee muuttaa vertailua varten merkkijonoksi:
+//     if ( blogDelete.user.toString() === userid.toString() ){
+
+//       await Blog.findByIdAndRemove(request.params.id)
+//       response.status(204).end()}
+//   } catch (exception) {
+//     console.log(exception)
+//     response.status(400).send({ error: 'malformatted id' })
+//   }
 // })
 
 

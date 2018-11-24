@@ -26,6 +26,7 @@ mongoose
 
 
 //otetaan käyttöön joukko erilaisia middlewareja eli funktioita request- ja response-olioiden käsittelyyn.
+app.use(middleware.tokenExtractor)
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static('build'))
